@@ -18,7 +18,7 @@ if ([System.Environment]::Is64BitOperatingSystem) {
 else {
     $file = "nezha-agent_windows_386.zip"
 }
-$agentreleases = "https://api.github.com/repos/$agentrepo/releases"
+# $agentreleases = "https://api.github.com/repos/$agentrepo/releases"
 #重复运行自动更新
 if (Test-Path "C:\nezha\nezha-agent.exe") {
     Write-Host "Nezha monitoring already exists, delete and reinstall" -BackgroundColor DarkGreen -ForegroundColor White
@@ -26,28 +26,29 @@ if (Test-Path "C:\nezha\nezha-agent.exe") {
     Remove-Item "C:\nezha" -Recurse
 }
 #TLS/SSL
-Write-Host "Determining latest nezha release" -BackgroundColor DarkGreen -ForegroundColor White
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$agenttag = (Invoke-WebRequest -Uri $agentreleases -UseBasicParsing | ConvertFrom-Json)[0].tag_name
-if ([string]::IsNullOrWhiteSpace($agenttag)) {
-    $optionUrl = "https://fastly.jsdelivr.net/gh/nezhahq/agent/"
-    Try {
-        $response = Invoke-WebRequest -Uri $optionUrl -UseBasicParsing -TimeoutSec 10
-        if ($response.StatusCode -eq 200) {
-            $versiontext = $response.Content | findstr /c:"option.value"
-            $version = [regex]::Match($versiontext, "@(\d+\.\d+\.\d+)").Groups[1].Value
-            $agenttag = "v" + $version
-        }
-    } Catch {
-        $optionUrl = "https://gcore.jsdelivr.net/gh/nezhahq/agent/"
-        $response = Invoke-WebRequest -Uri $optionUrl -UseBasicParsing -TimeoutSec 10
-        if ($response.StatusCode -eq 200) {
-            $versiontext = $response.Content | findstr /c:"option.value"
-            $version = [regex]::Match($versiontext, "@(\d+\.\d+\.\d+)").Groups[1].Value
-            $agenttag = "v" + $version
-        }
-    }
-}
+# Write-Host "Determining latest nezha release" -BackgroundColor DarkGreen -ForegroundColor White
+# [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+# $agenttag = (Invoke-WebRequest -Uri $agentreleases -UseBasicParsing | ConvertFrom-Json)[0].tag_name
+# if ([string]::IsNullOrWhiteSpace($agenttag)) {
+#     $optionUrl = "https://fastly.jsdelivr.net/gh/nezhahq/agent/"
+#     Try {
+#         $response = Invoke-WebRequest -Uri $optionUrl -UseBasicParsing -TimeoutSec 10
+#         if ($response.StatusCode -eq 200) {
+#             $versiontext = $response.Content | findstr /c:"option.value"
+#             $version = [regex]::Match($versiontext, "@(\d+\.\d+\.\d+)").Groups[1].Value
+#             $agenttag = "v" + $version
+#         }
+#     } Catch {
+#         $optionUrl = "https://gcore.jsdelivr.net/gh/nezhahq/agent/"
+#         $response = Invoke-WebRequest -Uri $optionUrl -UseBasicParsing -TimeoutSec 10
+#         if ($response.StatusCode -eq 200) {
+#             $versiontext = $response.Content | findstr /c:"option.value"
+#             $version = [regex]::Match($versiontext, "@(\d+\.\d+\.\d+)").Groups[1].Value
+#             $agenttag = "v" + $version
+#         }
+#     }
+# }
+$agenttag = "v0.20.5"
 #Region判断
 $ipapi = ""
 $region = "Unknown"
